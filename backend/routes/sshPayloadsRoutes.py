@@ -3,12 +3,12 @@ from concurrent.futures import ThreadPoolExecutor
 import os
 import paramiko
 
-router = APIRouter(prefix="/sshPayloads", tags=["Authentication"])
+router = APIRouter(prefix="/sshPayloads")
 
 @router.get("/")
 def read_root():
     return {
-        "message": "Partie SSH-Payloads de l'API ...",
+        "message": "Partie SSH-Payloads de l'API Shorklights",
     }
 
 @router.post("/playSound")
@@ -32,7 +32,7 @@ def indexSound(file: UploadFile = File(None), sound: str = None):
         else :
             raise ValueError("No sound selected")
     except Exception as e:
-        return {"type": "playSound", "status": False, "error": str(e)}
+        return {"type": "playSound", "success": False, "message": str(e)}
 
 @router.post("/changeWallpaper")
 def indexWallpaper(file: UploadFile = File(None), wallpaper: str = None):
@@ -53,9 +53,9 @@ def indexWallpaper(file: UploadFile = File(None), wallpaper: str = None):
         if wallpaper is not None:
             return executePayload('changeWallpaper', wallpaper=wallpaper)
         else :
-            return {"type": "changeWallpaper", "status": False, "error": "No wallpaper selected"}
+            return {"type": "changeWallpaper", "success": False, "message": "No wallpaper selected"}
     except Exception as e:
-        return {"type": "changeWallpaper", "status": False, "error": str(e)}
+        return {"type": "changeWallpaper", "success": False, "message": str(e)}
 
 # Helper functions
 def executePayload(type, wallpaper = None, sound = None):
@@ -67,9 +67,9 @@ def executePayload(type, wallpaper = None, sound = None):
             case "changeWallpaper":
                 changeWallpaper("192.168.1.28", wallpaper)
                 pass
-        return {"type": type, "status": True}
+        return {"type": type, "success": True, "message": "Payload executed successfully"}
     except Exception as e:
-        return {"type": type, "status": False, "error": str(e)}
+        return {"type": type, "success": False, "message": str(e)}
 
 def changeWallpaper(ip, wallpaper):
     try:

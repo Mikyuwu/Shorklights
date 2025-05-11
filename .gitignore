@@ -1,2 +1,10 @@
 .idea/
 .idea
+
+.env
+*.py[cod]
+__pycache__/
+backend/__pycache__/
+
+backend/assets/*
+!backend/assets/.gitkeep
