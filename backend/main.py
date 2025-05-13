@@ -4,6 +4,7 @@ from fastapi.exceptions import RequestValidationError
 
 from routes.sshPayloadsRoutes import router as ssh_payloads_router
 from routes.serversRoutes import router as servers_router
+from routes.authRoutes import router as auth_router
 
 from helpers.returnResult import return_result
 from database.dbHelper import init_db
@@ -29,6 +30,7 @@ app.add_middleware(
 
 app.include_router(ssh_payloads_router)
 app.include_router(servers_router)
+app.include_router(auth_router)
 
 @app.get("/")
 async def read_root():

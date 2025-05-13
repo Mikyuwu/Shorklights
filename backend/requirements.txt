@@ -5,5 +5,5 @@ paramiko
 requests
 python-multipart
 pymongo
-python-jose[cryptography]
+pyjwt
 passlib[bcrypt]

@@ -91,7 +91,7 @@ def init_db():
 
     usersCollection.insert_one({
         "username": "changeme",
-        "password": "changeme",
+        "password": "$2b$12$8e75P3AX..ReJY1eEV5zueXZWbVt/AyMnFyL6z4eNPbuU1QludQBq",
         "role_id": rolesCollection.find_one({"name": "shork"})["_id"]
     })
 
