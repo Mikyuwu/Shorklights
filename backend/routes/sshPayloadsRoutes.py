@@ -1,4 +1,6 @@
-from fastapi import APIRouter, FastAPI, UploadFile, File
+from fastapi import APIRouter, FastAPI, UploadFile, File, Depends
+from routes.authRoutes import get_authentificated_user
+from helpers.returnResult import return_result
 from concurrent.futures import ThreadPoolExecutor
 import os
 import paramiko
@@ -12,10 +14,8 @@ def read_root():
     }
 
 @router.post("/playSound")
-def indexSound(file: UploadFile = File(None), sound: str = None):
+def index_sound(file: UploadFile = File(None), sound: str = None, current_user: tuple = Depends(get_authentificated_user)):
     try:
-        print(file.filename)
-
         if file and file.content_type in ["audio/mpeg", "audio/mp3"]:
             with open('/app/assets/' + file.filename, "wb") as f:
                 f.write(file.file.read())
@@ -28,14 +28,14 @@ def indexSound(file: UploadFile = File(None), sound: str = None):
             raise ValueError("Invalid file type. Only mp3 files are allowed.")
 
         if sound is not None:
-            return executePayload('playSound', sound=sound)
+            return execute_payload('playSound', sound=sound)
         else :
             raise ValueError("No sound selected")
     except Exception as e:
-        return {"type": "playSound", "success": False, "message": str(e)}
+        return return_result(False, message=str(e), status_code=400)
 
 @router.post("/changeWallpaper")
-def indexWallpaper(file: UploadFile = File(None), wallpaper: str = None):
+def index_wallpaper(file: UploadFile = File(None), wallpaper: str = None, current_user: tuple = Depends(get_authentificated_user)):
     try:
         print(file.filename)
 
@@ -51,27 +51,27 @@ def indexWallpaper(file: UploadFile = File(None), wallpaper: str = None):
             raise ValueError("Invalid file type. Only png and jpeg files are allowed.")
 
         if wallpaper is not None:
-            return executePayload('changeWallpaper', wallpaper=wallpaper)
+            return execute_payload('changeWallpaper', wallpaper=wallpaper)
         else :
-            return {"type": "changeWallpaper", "success": False, "message": "No wallpaper selected"}
+            raise ValueError("No wallpaper selected")
     except Exception as e:
-        return {"type": "changeWallpaper", "success": False, "message": str(e)}
+        return return_result(False, message=str(e), status_code=400)
 
 # Helper functions
-def executePayload(type, wallpaper = None, sound = None):
+def execute_payload(type, wallpaper = None, sound = None):
     try:
         match type:
             case "playSound":
-                playSound("192.168.1.28", sound)
+                play_sound("192.168.1.28", sound)
                 pass
             case "changeWallpaper":
-                changeWallpaper("192.168.1.28", wallpaper)
+                change_wallpaper("192.168.1.28", wallpaper)
                 pass
-        return {"type": type, "success": True, "message": "Payload executed successfully"}
+        return return_result(True, message="Payload executed successfully")
     except Exception as e:
-        return {"type": type, "success": False, "message": str(e)}
+        return return_result(False, message=str(e), status_code=400)
 
-def changeWallpaper(ip, wallpaper):
+def change_wallpaper(ip, wallpaper):
     try:
         print("Payload sent to: ", ip)
         client = paramiko.SSHClient()
@@ -90,7 +90,7 @@ def changeWallpaper(ip, wallpaper):
         client.close()
     except Exception as e: raise e
 
-def playSound(ip, sound):
+def play_sound(ip, sound):
     try:
         print("Payload sent to: ", ip)
         client = paramiko.SSHClient()
@@ -98,7 +98,7 @@ def playSound(ip, sound):
         client.connect(ip, username='uha40', password='uha40')
 
         if not os.path.exists(sound["path"]):
-            raise FileNotFoundError(f"Wallpaper file not found at {sound['path']}")
+            raise FileNotFoundError(f"Sound file not found at {sound['path']}")
 
         sftp = client.open_sftp()
         sftp.put(sound['path'], f'/home/uha40/Bureau/{sound["name"]}')

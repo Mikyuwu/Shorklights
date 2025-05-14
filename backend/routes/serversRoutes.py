@@ -1,10 +1,10 @@
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, FastAPI, Depends
 from bson import ObjectId
 from database.dbHelper import get_db_connection
 from models.servers import Servers
 from helpers.returnResult import return_result
 from pymongo.errors import DuplicateKeyError
-from fastapi.exceptions import RequestValidationError
+from routes.authRoutes import get_authentificated_user
 
 router = APIRouter(prefix="/servers")
 
@@ -18,18 +18,18 @@ def read_root():
     }
 
 @router.get("/getServers")
-def getServers():
+def get_servers(current_user: tuple = Depends(get_authentificated_user)):
     try:
         serverlist = []
         for server in ServersCollections.find():
-            server["_id"] = str(server["_id"])  # so it's JSON serializable ✨
+            server["_id"] = str(server["_id"])
             serverlist.append(server)
         return return_result(True, data=serverlist)
     except Exception:
         return return_result(False, message="Unexpected error occurred", status_code=400)
 
 @router.post("/addServer")
-def addServer(server: Servers):
+def add_server(server: Servers, current_user: tuple = Depends(get_authentificated_user)):
     try:
         ServersCollections.insert_one(server.dict())
         return return_result(True, message="Server added successfully")
@@ -39,7 +39,7 @@ def addServer(server: Servers):
         return return_result(False, message="Unexpected error occurred", status_code=400)
 
 @router.put("/updateServer/{id}")
-def updateServer(id: str, server: Servers):
+def update_server(id: str, server: Servers, current_user: tuple = Depends(get_authentificated_user)):
     # validate that no field is empty
     for field_name, value in server.dict().items():
         if value == "":
@@ -52,11 +52,13 @@ def updateServer(id: str, server: Servers):
         if result.matched_count == 0:
             return return_result(False, message="Server not found", status_code=404)
         return return_result(True, message="Server updated successfully")
+    except DuplicateKeyError:
+        return return_result(False, message="IP already exists", status_code=400)
     except Exception:
         return return_result(False, message="Unexpected error occurred", status_code=400)
 
 @router.delete("/deleteServer/{id}")
-def deleteServer(id: str):
+def delete_server(id: str, current_user: tuple = Depends(get_authentificated_user)):
     if not ObjectId.is_valid(id):
         return return_result(False, message="Invalid ID format", status_code=400)
     try:

@@ -16,3 +16,8 @@ class Users(BaseModel):
     username: str
     password: str
     role_id: PydanticObjectId
+
+class UsersCreate(BaseModel):
+    username: str
+    password: str
+    role: str

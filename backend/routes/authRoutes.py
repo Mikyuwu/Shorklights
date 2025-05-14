@@ -25,6 +25,18 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
 
+credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Not authenticated",
+        headers={"WWW-Authenticate": "Bearer"}
+    )
+
+permissions_exception = HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Not authorized",
+        headers={"WWW-Authenticate": "Bearer"}
+    )
+
 def verify_password(plain_password, hashed_password):
     try:
         return pwd_context.verify(plain_password, hashed_password)
@@ -44,12 +56,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Not authenticated",
-        headers={"WWW-Authenticate": "Bearer"}
-    )
-
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
@@ -66,15 +72,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 async def get_admin_user(current_user: tuple = Depends(get_current_user)):
     role_id=ObjectId(current_user["role_id"])
     role = roles_db.find_one({"_id": role_id})
-    if role != "shork":
-        return return_result(False, message="You are not authorized to perform this action", status_code=403)
+    if role["name"] != "shork":
+        raise permissions_exception
     return current_user
 
 async def get_authentificated_user(current_user: tuple = Depends(get_current_user)):
     role_id=ObjectId(current_user["role_id"])
     role = roles_db.find_one({"_id": role_id})
-    if role != "shork" and role != "member":
-        return return_result(False, message="You are not authorized to perform this action", status_code=403)
+    if role["name"] not in ["shork", "member"]:
+        raise permissions_exception
     return current_user
 
 
@@ -84,13 +90,10 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     if not user or not verify_password(form_data.password, user["password"]):
         return return_result(False, message="Incorrect username or password", status_code=401)
 
-
-    print(user)
     role_id = user["role_id"]
     if not isinstance(role_id, ObjectId):
         role_id = ObjectId(role_id)
     role = roles_db.find_one({"_id": role_id})
-    print(role)
 
     role_name = role["name"]
 

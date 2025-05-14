@@ -83,6 +83,8 @@ def init_db():
     })
 
     serversCollection.create_index("ip", unique=True)
+    rolesCollection.create_index("name", unique=True)
+    usersCollection.create_index("username", unique=True)
 
     rolesCollection.insert_many([
         {"name": "shork"},
