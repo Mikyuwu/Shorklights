@@ -7,6 +7,14 @@ services:
     env_file:
       - .env
 
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend/src:/app/src
+    env_file:
+      - .env
+
   nginx:
     image: nginx:latest
     volumes:
@@ -15,8 +23,11 @@ services:
       - "80:80"
     environment:
       - BACKEND_PORT=${BACKEND_PORT}
+      - FRONTEND_PORT=${FRONTEND_PORT}
     depends_on:
       - backend
+      - frontend
+      - db
 
   db:
     image: mongo
