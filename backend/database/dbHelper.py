@@ -11,7 +11,7 @@ def get_db_connection():
 
     while attempt < max_attempts:
         try:
-            client = MongoClient(f"mongodb://{DB_USER}:{DB_PASSWORD}@db:27017/")
+            client = MongoClient(f"mongodb://{DB_USER}:{DB_PASSWORD}@localhost:22222/")
             client.admin.command('ping')
             return client
         except Exception as e:

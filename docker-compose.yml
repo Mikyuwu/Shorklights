@@ -6,6 +6,7 @@ services:
       - ./backend:/app
     env_file:
       - .env
+    network_mode: host
 
   frontend:
     build:
@@ -14,13 +15,12 @@ services:
       - ./frontend/src:/app/src
     env_file:
       - .env
+    network_mode: host
 
   nginx:
     image: nginx:latest
     volumes:
       - ./nginx.conf:/etc/nginx/templates/default.conf.template
-    ports:
-      - "80:80"
     environment:
       - BACKEND_PORT=${BACKEND_PORT}
       - FRONTEND_PORT=${FRONTEND_PORT}
@@ -28,6 +28,7 @@ services:
       - backend
       - frontend
       - db
+    network_mode: host
 
   db:
     image: mongo
