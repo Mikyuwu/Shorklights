@@ -2,6 +2,9 @@
   let mobileMenuOpen = false
   let profileOpen = false
   let username= "User"
+
+  import { page } from '$app/stores';
+  $: current = $page.url.pathname;
 </script>
 
 <nav class="fixed inset-x-0 top-0 z-10 h-16 bg-gray-900 border-b-2 border-b-sky-400/90 shadow-[0_0_102px_4px] shadow-sky-400/90">
@@ -22,11 +25,11 @@
         </div>
         <div class="hidden sm:ml-6 sm:block">
           <div class="flex space-x-4">
-            <a href="/" class="text-white hover:text-sky-400 px-3 py-2 text-m font-medium transition duration-200">Home</a>
-            <a href="/sshPayloads" class="text-white hover:text-sky-400 px-3 py-2 text-m font-medium transition duration-200">SSH</a>
-            <a href="/apiPayloads" class="text-white hover:text-sky-400 px-3 py-2 text-m font-medium transition duration-200">API</a>
-            <a href="/users" class="text-white hover:text-sky-400 px-3 py-2 text-m font-medium transition duration-200">Users</a>
-            <a href="/about" class="text-white hover:text-sky-400 px-3 py-2 text-m font-medium transition duration-200">Transtion Test</a>
+            <a href="/" class="px-3 py-2 text-m font-medium transition duration-200 {current === '/' ? 'text-sky-400' : 'text-white hover:text-sky-400'}">Home</a>
+            <a href="/sshPayloads" class="px-3 py-2 text-m font-medium transition duration-200 {current === '/sshPayloads' ? 'text-sky-400' : 'text-white hover:text-sky-400'}">SSH</a>
+            <a href="/apiPayloads" class="px-3 py-2 text-m font-medium transition duration-200 {current === '/apiPayloads' ? 'text-sky-400' : 'text-white hover:text-sky-400'}">API</a>
+            <a href="/users" class="px-3 py-2 text-m font-medium transition duration-200 {current === '/users' ? 'text-sky-400' : 'text-white hover:text-sky-400'}">Users</a>
+            <a href="/about" class="px-3 py-2 text-m font-medium transition duration-200 {current === '/about' ? 'text-sky-400' : 'text-white hover:text-sky-400'}">Transtion Test</a>
           </div>
         </div>
       </div>
@@ -44,9 +47,9 @@
 
           {#if profileOpen}
             <div class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1" role="menu" aria-labelledby="user-menu-button">
-              <a href="/profile" class="block px-4 py-2 text-sm text-white hover:text-sky-400 transition duration-200" role="menuitem">Your Profile</a>
-              <a href="/settings" class="block px-4 py-2 text-sm text-white hover:text-sky-400 transition duration-200" role="menuitem">Settings</a>
-              <a href="/signout" class="block px-4 py-2 text-sm text-white hover:text-sky-400 transition duration-200" role="menuitem">Sign out</a>
+              <a href="/profile" class="block px-4 py-2 text-sm transition duration-200 {current === '/profile' ? 'text-sky-400' : 'text-white hover:text-sky-400'}" role="menuitem">Your Profile</a>
+              <a href="/settings" class="block px-4 py-2 text-sm transition duration-200 {current === '/settings' ? 'text-sky-400' : 'text-white hover:text-sky-400'}" role="menuitem">Settings</a>
+              <a href="/signout" class="block px-4 py-2 text-sm transition duration-200 {current === '/signout' ? 'text-sky-400' : 'text-white hover:text-sky-400'}" role="menuitem">Sign out</a>
             </div>
           {/if}
         </div>
@@ -55,12 +58,12 @@
   </div>
 
   {#if mobileMenuOpen}
-    <div class="sm:hidden" id="mobile-menu">
+    <div class="sm:hidden bg-gray-900" id="mobile-menu">
       <div class="space-y-1 px-2 pt-2 pb-3">
-        <a href="/" class="text-white block  hover:bg-gray-700 hover:text-sky-400 rounded-md px-3 py-2 text-base font-medium transition duration-200">Home</a>
-        <a href="/sshPayloads" class="text-white hover:bg-gray-700 hover:text-sky-400 block rounded-md px-3 py-2 text-base font-medium transition duration-200">SSH</a>
-        <a href="/apiPayloads" class="text-white hover:bg-gray-700 hover:text-sky-400 block rounded-md px-3 py-2 text-base font-medium transition duration-200">API</a>
-        <a href="/users" class="text-white hover:bg-gray-700 hover:text-sky-400 block rounded-md px-3 py-2 text-base font-medium transition duration-200">Users</a>
+        <a href="/" class="block rounded-md px-3 py-2 text-base font-medium transition duration-200 {current === '/' ? 'text-sky-400' : 'text-white block hover:bg-gray-700 hover:text-sky-400'}">Home</a>
+        <a href="/sshPayloads" class="block rounded-md px-3 py-2 text-base font-medium transition duration-200 {current === '/sshPayloads' ? 'text-sky-400' : 'text-white block hover:bg-gray-700 hover:text-sky-400'}">SSH</a>
+        <a href="/apiPayloads" class="block rounded-md px-3 py-2 text-base font-medium transition duration-200 {current === '/apiPayloads' ? 'text-sky-400' : 'text-white block hover:bg-gray-700 hover:text-sky-400'}">API</a>
+        <a href="/users" class="block rounded-md px-3 py-2 text-base font-medium transition duration-200 {current === '/users' ? 'text-sky-400' : 'text-white block hover:bg-gray-700 hover:text-sky-400'}">Users</a>
       </div>
     </div>
   {/if}
