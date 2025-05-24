@@ -5,13 +5,14 @@ import time
 def get_db_connection():
     DB_USER = os.getenv("MONGO_INITDB_ROOT_USERNAME", "")
     DB_PASSWORD = os.getenv("MONGO_INITDB_ROOT_PASSWORD", "")
+    DB_PORT = os.getenv("MONGO_PORT", "27017")
 
     max_attempts = 3
     attempt = 0
 
     while attempt < max_attempts:
         try:
-            client = MongoClient(f"mongodb://{DB_USER}:{DB_PASSWORD}@localhost:22222/")
+            client = MongoClient(f"mongodb://{DB_USER}:{DB_PASSWORD}@localhost:{DB_PORT}/")
             client.admin.command('ping')
             return client
         except Exception as e:

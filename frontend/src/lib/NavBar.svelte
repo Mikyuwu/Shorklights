@@ -1,10 +1,11 @@
 <script lang="ts">
   let mobileMenuOpen = false
   let profileOpen = false
-  let username= "User"
+  export let username: string;
 
   import { page } from '$app/stores';
   $: current = $page.url.pathname;
+
 </script>
 
 <nav class="fixed inset-x-0 top-0 z-10 h-16 bg-gray-900 border-b-2 border-b-sky-400/90 shadow-[0_0_102px_4px] shadow-sky-400/90">
