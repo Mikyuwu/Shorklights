@@ -3,7 +3,7 @@ import { JWT_SECRET_KEY } from '$env/static/private';
 import jwt from 'jsonwebtoken';
 
 export class AuthHelper {
-    private static getToken(cookies: { get: (name: string) => string | undefined }): string | undefined {
+    public static getToken(cookies: { get: (name: string) => string | undefined }): string | undefined {
         return cookies.get('token');
     }
 
@@ -17,14 +17,11 @@ export class AuthHelper {
                     throw 'Token invalid';
                     return false;
                 }
-                console.log(decoded);
                 return decoded;
             })
             const username = tokenPayload.sub || "Unknown";
-
             const currentTime = Math.floor(Date.now() / 1000);
             if (tokenPayload.exp < currentTime) { throw 'Token expired'; }
-
             return { username };
         } catch (error) {
             console.error('Token verification failed:', error);

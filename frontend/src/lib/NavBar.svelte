@@ -8,7 +8,7 @@
 
 </script>
 
-<nav class="fixed inset-x-0 top-0 z-10 h-16 bg-gray-900 border-b-2 border-b-sky-400/90 shadow-[0_0_102px_4px] shadow-sky-400/90">
+<nav class="fixed inset-x-0 top-0 z-1000 h-16 bg-gray-900 border-b-2 border-b-sky-400/90 shadow-[0_0_102px_4px] shadow-sky-400/90">
   <div class="mx-auto px-2 sm:px-6 lg:px-8">
     <div class="relative flex h-16 items-center justify-between">
       <!-- Mobile -->
@@ -30,7 +30,6 @@
             <a href="/sshPayloads" class="px-3 py-2 text-m font-medium transition duration-200 {current === '/sshPayloads' ? 'text-sky-400' : 'text-white hover:text-sky-400'}">SSH</a>
             <a href="/apiPayloads" class="px-3 py-2 text-m font-medium transition duration-200 {current === '/apiPayloads' ? 'text-sky-400' : 'text-white hover:text-sky-400'}">API</a>
             <a href="/users" class="px-3 py-2 text-m font-medium transition duration-200 {current === '/users' ? 'text-sky-400' : 'text-white hover:text-sky-400'}">Users</a>
-            <a href="/about" class="px-3 py-2 text-m font-medium transition duration-200 {current === '/about' ? 'text-sky-400' : 'text-white hover:text-sky-400'}">Transtion Test</a>
           </div>
         </div>
       </div>

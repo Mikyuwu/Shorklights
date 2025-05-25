@@ -18,8 +18,6 @@ export const actions = {
             body: new URLSearchParams({ username, password }).toString(),
         });
 
-        console.log(ACCESS_TOKEN_EXPIRE_MINUTES);
-
         if (response.ok) {
             const responseData = await response.json();
             cookies.set('token', responseData.data.access_token, {

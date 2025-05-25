@@ -7,7 +7,7 @@ module.exports = {
     },
     plugins: [
         function ({ addVariant }) {
-            addVariant('tall', '@media (min-height: 800px)');
+            addVariant('tall', '@media (min-height: 850px)');
         },
     ],
 };
