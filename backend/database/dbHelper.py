@@ -83,6 +83,7 @@ def init_db():
         }
     })
 
+    serversCollection.create_index("name", unique=True)
     serversCollection.create_index("ip", unique=True)
     rolesCollection.create_index("name", unique=True)
     usersCollection.create_index("username", unique=True)

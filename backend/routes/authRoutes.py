@@ -90,15 +90,8 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     if not user or not verify_password(form_data.password, user["password"]):
         return return_result(False, message="Incorrect username or password", status_code=401)
 
-    role_id = user["role_id"]
-    if not isinstance(role_id, ObjectId):
-        role_id = ObjectId(role_id)
-    role = roles_db.find_one({"_id": role_id})
-
-    role_name = role["name"]
-
     access_token = create_access_token(
-        data={"sub": user["username"], "role": role_name})
+        data={"sub": user["username"]})
 
     response = {"access_token": access_token, "token_type": "bearer"}
     return return_result(True, data=response, message="Authentifcation successful")
