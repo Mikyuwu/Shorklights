@@ -20,5 +20,20 @@ export const actions = {
         } else {
             return { error: 'Failed to fetch servers' };
         }
+    },
+
+    executePayload: async ({ cookies, fetch, request }) => {
+        const token = AuthHelper.getToken(cookies);
+        if (!token) {
+            return { error: 'Unauthorized' };
+        }
+        const formData = await request.formData();
+        formData.forEach((value, key) => {
+            if (value && typeof value === 'object' && 'name' in value && 'type' in value && 'size' in value) {
+                console.log('file', key, value.name, value.type, value.size);
+            } else {
+                console.log(key, value);
+            }
+        });
     }
 }
