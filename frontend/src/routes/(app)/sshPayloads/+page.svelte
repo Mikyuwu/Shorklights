@@ -183,7 +183,7 @@
 {#if showModalPayloads}
     <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
         <div class="bg-gray-900 p-8 m-8 max-w-3xl w-full min-h-94 max-h-[42vh] h-full rounded-2xl border border-sky-400/90 shadow-[0_0_40px_3px] shadow-sky-400/60 relative flex flex-col">
-            <form id="payloadForm" method="POST" class="flex flex-col h-full" action="?/executePayload" enctype="multipart/form-data">
+            <form id="payloadForm" method="POST" class="flex flex-col h-full" action="?/executePayload" enctype="multipart/form-data" use:enhance>
                 <div class="flex items-center justify-between gap-4 mb-6">
                     <div class="flex flex-col md:flex-row md:items-center">
                         {#if payloadsType === 'changeWallpaper'}
@@ -211,7 +211,7 @@
                             <i class="icon-[iconamoon--cloud-upload] text-5xl text-sky-400 mb-3"></i>
                         {/if}
                         <span class="text-white text-md md:text-lg font-medium">{fileName || 'Drop files here or click to upload'}</span>
-                            <input id="fileInput" name="image" type="file" class="hidden" on:change={handleFileChange} accept={payloadsType === 'changeWallpaper' ? '.png,.jpg,.jpeg' : '.mp3'}/>
+                            <input id="fileInput" name="file" type="file" class="hidden" on:change={handleFileChange} accept={payloadsType === 'changeWallpaper' ? '.png,.jpg,.jpeg' : '.mp3'}/>
                         {#if !imageUrl}
                             {#if payloadsType === 'changeWallpaper'}
                                 <span class="text-gray-400 text-sm mt-2">Supported: PNG, JPG, JPEG</span>
