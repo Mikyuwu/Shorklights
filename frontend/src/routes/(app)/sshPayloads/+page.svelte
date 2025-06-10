@@ -5,6 +5,27 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
     import { onMount } from 'svelte';
+    import toast, { Toaster } from 'svelte-french-toast';
+
+    function handleEnhance() {
+        return ({ result }: any[]) => {
+            if (result.type === 'success') {
+                toast.success('Payload executed successfully!', {
+                    duration: 3000,
+                    position: 'bottom-right',
+                    className: 'my-toast'
+                });
+                showModalPayloads = false;
+            } else if (result.type === 'error') {
+                toast.error('Failed to execute payload.', {
+                    duration: 3000,
+                    position: 'bottom-right',
+                    className: 'bg-gray-900 text-white'
+                });
+                showModalPayloads = false;
+            }
+        };
+    }
 
     let requestWaiting = false;
     let alreadyRequested = false;
@@ -147,6 +168,8 @@
     }
 </script>
 
+<Toaster />
+
 <section id="header" class="relative flex flex-col items-center z-20">
     <h1 class="text-4xl md:text-5xl font-bold text-center">
         <span class="text-sky-400">S</span>S<span class="text-sky-400">H</span>
@@ -192,7 +215,7 @@
 {#if showModalPayloads}
     <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
         <div class="bg-gray-900 p-8 m-8 max-w-3xl w-full min-h-94 max-h-[42vh] h-full rounded-2xl border border-sky-400/90 shadow-[0_0_40px_3px] shadow-sky-400/60 relative flex flex-col">
-            <form id="payloadForm" method="POST" class="flex flex-col h-full" action="?/executePayload" enctype="multipart/form-data" use:enhance>
+            <form id="payloadForm" method="POST" class="flex flex-col h-full" action="?/executePayload" enctype="multipart/form-data" use:enhance={handleEnhance}>
                 <div class="flex items-center justify-between gap-4 mb-6">
                     <div class="flex flex-col md:flex-row md:items-center">
                         {#if payloadsType === 'changeWallpaper'}

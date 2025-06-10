@@ -30,21 +30,13 @@ export const actions = {
 
         const formData = await request.formData();
 
-        formData.forEach((value, key) => {
-            if (value && typeof value === 'object' && 'name' in value && 'type' in value && 'size' in value) {
-                console.log('file', key, value.name, value.type, value.size);
-            } else {
-                console.log(key, value);
-            }
-        });
-
         let url: string;
         switch (formData.get("payloadType")) {
             case 'changeWallpaper':
                 url = "/api/sshPayloads/changeWallpaper";
                 break;
             case 'playSounds':
-                url = "/api/sshPayloads/playSounds";
+                url = "/api/sshPayloads/playSound";
                 break;
             default:
                 return { error: 'Invalid payload type' };
@@ -56,9 +48,15 @@ export const actions = {
                 'Authorization': 'Bearer ' + token,
             },
             body: formData
-        })
+        });
 
         const data = await response.json();
-        console.log(data);
+        if (response.ok) {
+            console.log("Nya")
+            return { success: data.message || 'Payload executed successfully' };
+        } else {
+            console.log("Not funny")
+            return { error: data.message || 'Failed to execute payload'};
+        }
     }
 }

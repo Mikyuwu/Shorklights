@@ -19,3 +19,8 @@
     60%{background-position:0%  50%, 50% 100%,100%   0%}
     80%{background-position:0%  50%, 50%  50%,100% 100%}
 }
+
+.my-toast {
+    background: #111827;
+    color: #fff;
+}

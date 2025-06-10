@@ -39,12 +39,12 @@ def read_root():
 def index_sound(file: UploadFile = File(None), sound: str = None, current_user: tuple = Depends(get_authentificated_user)):
     try:
         if file and file.content_type in ["audio/mpeg", "audio/mp3"]:
-            with open('/app/assets/' + file.filename, "wb") as f:
+            with open('/app/assets/sounds/' + file.filename, "wb") as f:
                 f.write(file.file.read())
             file.file.close()
             sound = {
                 "name": file.filename,
-                "path": "/app/assets/" + file.filename
+                "path": "/app/assets/sounds/" + file.filename
             }
         else:
             raise ValueError("Invalid file type. Only mp3 files are allowed.")
@@ -60,12 +60,12 @@ def index_sound(file: UploadFile = File(None), sound: str = None, current_user: 
 def index_wallpaper(file: UploadFile = File(None), wallpaper: str = None, servers: List[str] = Form(...), current_user: tuple = Depends(get_authentificated_user)):
     try:
         if file and file.content_type in ['image/png', 'image/jpeg']:
-            with open('/app/assets/' + file.filename, "wb") as f:
+            with open('/app/assets/wallpapers/' + file.filename, "wb") as f:
                 f.write(file.file.read())
             file.file.close()
             wallpaper = {
                 "name": file.filename,
-                "path": "/app/assets/" + file.filename
+                "path": "/app/assets/wallpapers" + file.filename
             }
         else:
             raise ValueError("Invalid file type. Only png and jpeg files are allowed.")
@@ -101,15 +101,17 @@ def change_wallpaper(ip, username, password, wallpaper):
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(ip, username=username, password=password)
 
+        client.exec_command(f'mkdir -p /home/{username}/.shorklights/wallpapers/')
+
         if not os.path.exists(wallpaper["path"]):
             raise FileNotFoundError(f"Wallpaper file not found at {wallpaper['path']}")
 
         sftp = client.open_sftp()
 
-        sftp.put(wallpaper["path"], f'/home/{username}/{wallpaper["name"]}')
+        sftp.put(wallpaper["path"], f'/home/{username}/.shorklights/wallpapers/{wallpaper["name"]}')
         sftp.close()
 
-        client.exec_command(f'gsettings set org.gnome.desktop.background picture-uri "file:///home/{username}/{wallpaper["name"]}"')
+        client.exec_command(f'gsettings set org.gnome.desktop.background picture-uri "file:///home/{username}/.shorklights/wallpapers/{wallpaper["name"]}"')
         client.close()
     except Exception as e: raise e
 

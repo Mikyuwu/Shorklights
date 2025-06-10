@@ -30,7 +30,7 @@ export const actions = {
             });
             throw redirect(303, '/')
         } else {
-            throw 'Login failed';
+            return { error: 'Login failed' };
         }
     }
 } satisfies Actions;
