@@ -104,9 +104,18 @@
 
     function handleDrop(event: DragEvent) {
         event.preventDefault();
-        if (event.dataTransfer && event.dataTransfer.files.length > 0) {
-            file = event.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/') && payloadsType === 'changeWallpaper' || (file.type === 'audio/mpeg' && payloadsType === 'playSounds')) {
+        const input = document.getElementById('fileInput') as HTMLInputElement | null;
+        if (event.dataTransfer && event.dataTransfer.files.length > 0 && input) {
+            const droppedFile = event.dataTransfer.files[0];
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(droppedFile);
+            input.files = dataTransfer.files;
+
+            file = droppedFile;
+            if (
+                (file.type.startsWith('image/') && payloadsType === 'changeWallpaper') ||
+                (file.type === 'audio/mpeg' && payloadsType === 'playSounds')
+            ) {
                 imageUrl = URL.createObjectURL(file);
                 fileName = file.name;
             } else {

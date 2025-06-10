@@ -106,10 +106,10 @@ def change_wallpaper(ip, username, password, wallpaper):
 
         sftp = client.open_sftp()
 
-        sftp.put(wallpaper["path"], f'/home/{username}/Pictures/{wallpaper["name"]}')
+        sftp.put(wallpaper["path"], f'/home/{username}/{wallpaper["name"]}')
         sftp.close()
 
-        client.exec_command(f'gsettings set org.gnome.desktop.background picture-uri "file:///home/{username}/Pictures/{wallpaper["name"]}"')
+        client.exec_command(f'gsettings set org.gnome.desktop.background picture-uri "file:///home/{username}/{wallpaper["name"]}"')
         client.close()
     except Exception as e: raise e
 
