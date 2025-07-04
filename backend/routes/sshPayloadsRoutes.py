@@ -8,6 +8,7 @@ from bson import ObjectId
 from typing import List
 import os
 import paramiko
+from mutagen.mp3 import MP3
 
 router = APIRouter(prefix="/sshPayloads")
 
@@ -36,7 +37,7 @@ def read_root():
     }
 
 @router.post("/playSound")
-def index_sound(file: UploadFile = File(None), sound: str = None, current_user: tuple = Depends(get_authentificated_user)):
+def index_sound(file: UploadFile = File(None), sound: str = None, servers: List[str] = Form(...), current_user: tuple = Depends(get_authentificated_user)):
     try:
         if file and file.content_type in ["audio/mpeg", "audio/mp3"]:
             with open('/app/assets/sounds/' + file.filename, "wb") as f:
@@ -50,7 +51,7 @@ def index_sound(file: UploadFile = File(None), sound: str = None, current_user: 
             raise ValueError("Invalid file type. Only mp3 files are allowed.")
 
         if sound is not None:
-            return execute_payload('playSound', sound=sound)
+            return execute_payload('playSound', sound=sound, servers=servers)
         else :
             raise ValueError("No sound selected")
     except Exception as e:
@@ -65,7 +66,7 @@ def index_wallpaper(file: UploadFile = File(None), wallpaper: str = None, server
             file.file.close()
             wallpaper = {
                 "name": file.filename,
-                "path": "/app/assets/wallpapers" + file.filename
+                "path": "/app/assets/wallpapers/" + file.filename
             }
         else:
             raise ValueError("Invalid file type. Only png and jpeg files are allowed.")
@@ -85,7 +86,7 @@ def execute_payload(type, wallpaper = None, sound = None, servers: List[str] = F
                 case 'changeWallpaper':
                     futures = { executor.submit(change_wallpaper, server["ip"], server["username"], server["password"], wallpaper): server for server in servers_details}
                 case 'playSound':
-                    futures = { executor.submit(play_sound, server["ip"], sound): server for server in servers_details }
+                    futures = { executor.submit(play_sound, server["ip"], server["username"], server["password"], sound): server for server in servers_details }
                 case _:
                     raise ValueError("Invalid payload type")
             results = [future.result() for future in as_completed(futures)]
@@ -115,22 +116,31 @@ def change_wallpaper(ip, username, password, wallpaper):
         client.close()
     except Exception as e: raise e
 
-def play_sound(ip, sound):
+def play_sound(ip, username, password, sound):
     try:
         print("Payload sent to: ", ip)
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(ip, username='uha40', password='uha40')
+        client.connect(ip, username=username, password=password)
+
+        client.exec_command(f'mkdir -p /home/{username}/.shorklights/sounds/')
 
         if not os.path.exists(sound["path"]):
             raise FileNotFoundError(f"Sound file not found at {sound['path']}")
 
+        audio = MP3(sound["path"])
+        duration = int(audio.info.length)
+
         sftp = client.open_sftp()
-        sftp.put(sound['path'], f'/home/uha40/Bureau/{sound["name"]}')
+        sftp.put(sound['path'], f'/home/{username}/.shorklights/sounds/{sound["name"]}')
         sftp.close()
 
-        client.exec_command(f'mpg123 /home/uha40/Bureau/{sound["name"]}')
+        stdin, stdout, stderr = client.exec_command(
+            f'nohup mpg123 /home/{username}/.shorklights/sounds/{sound["name"]} > /dev/null 2>&1 &'
+        )
+
         client.close()
+        return {"duration": duration}
     except Exception as e: raise e
 
 

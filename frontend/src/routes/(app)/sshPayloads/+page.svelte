@@ -5,24 +5,13 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
     import { onMount } from 'svelte';
-    import toast, { Toaster } from 'svelte-french-toast';
 
     function handleEnhance() {
         return ({ result }: any[]) => {
-            if (result.type === 'success') {
-                toast.success('Payload executed successfully!', {
-                    duration: 3000,
-                    position: 'bottom-right',
-                    className: 'my-toast'
-                });
-                showModalPayloads = false;
-            } else if (result.type === 'error') {
-                toast.error('Failed to execute payload.', {
-                    duration: 3000,
-                    position: 'bottom-right',
-                    className: 'bg-gray-900 text-white'
-                });
-                showModalPayloads = false;
+            if (result.data.success) {
+                closePayloadsModal()
+            } else {
+                closePayloadsModal()
             }
         };
     }
@@ -43,6 +32,15 @@
         modalServer = document.getElementById('modalServer')
         serversList = document.getElementById('server-list')
     })
+
+    function closePayloadsModal() {
+        showModalPayloads = false;
+        imageUrl = null;
+        fileName = '';
+        payloadsType = '';
+        payloadsWindow = 'upload';
+    }
+
 
     function openServerList() {
         if (modalServer) { modalServer.classList.remove('hidden'); modalServer.classList.add('flex');}
@@ -147,6 +145,16 @@
 
     function handleUpload() {
         const selectedServers = getSelectedServers();
+        const fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
+
+        if (selectedServers.length === 0) {
+            return;
+        }
+
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+            return;
+        }
+
         const form = document.getElementById('payloadForm') as HTMLFormElement | null;
         if (!form) return;
 
@@ -167,8 +175,6 @@
         form.requestSubmit();
     }
 </script>
-
-<Toaster />
 
 <section id="header" class="relative flex flex-col items-center z-20">
     <h1 class="text-4xl md:text-5xl font-bold text-center">
@@ -225,11 +231,11 @@
                         {/if}
                         <span class="mx-2 text-gray-500 select-none hidden md:flex">|</span>
                         <div class="flex items-center gap-2 mt-2 md:mt-0">
-                            <button class="bg-gray-700 p-1 rounded-md hover:text-sky-300 transition duration-200 cursor-pointer" class:text-sky-400={payloadsWindow === 'upload'} on:click={() => payloadsWindow = 'upload'}>Upload</button>
-                                <button class="bg-gray-700 p-1 rounded-md hover:text-sky-300 transition duration-200 cursor-pointer" class:text-sky-400={payloadsWindow === 'library'} on:click={() => payloadsWindow = 'library'}>Library</button>
+                            <button type="button" class="bg-gray-700 p-1 rounded-md hover:text-sky-300 transition duration-200 cursor-pointer" class:text-sky-400={payloadsWindow === 'upload'} on:click={() => payloadsWindow = 'upload'}>Upload</button>
+                            <button type="button" class="bg-gray-700 p-1 rounded-md hover:text-sky-300 transition duration-200 cursor-pointer" class:text-sky-400={payloadsWindow === 'library'} on:click={() => payloadsWindow = 'library'}>Library</button>
                         </div>
                     </div>
-                    <button class="text-sky-400 text-3xl font-bold hover:text-red-500 transition cursor-pointer duration-200" aria-label="Close" on:click={() => { showModalPayloads = false; imageUrl=null; fileName="" }}>&times;</button>
+                    <button class="text-sky-400 text-3xl font-bold hover:text-red-500 transition cursor-pointer duration-200" aria-label="Close" on:click={() => { closePayloadsModal() }}>&times;</button>
                 </div>
                 {#if payloadsWindow === 'upload'}
                     <button type="button" on:drop={handleDrop} on:dragover|preventDefault on:click={() => document.getElementById('fileInput')?.click()} class="w-full h-full bg-gray-800 flex flex-col items-center justify-center border-1 border-dashed border-sky-400 rounded-lg transition hover:border-sky-300 hover:bg-gray-700 cursor-pointer">

@@ -52,11 +52,9 @@ export const actions = {
 
         const data = await response.json();
         if (response.ok) {
-            console.log("Nya")
-            return { success: data.message || 'Payload executed successfully' };
+            return { 'success': true, 'message': data.message || 'Payload executed successfully' };
         } else {
-            console.log("Not funny")
-            return { error: data.message || 'Failed to execute payload'};
+            return { 'success': false, 'message': data.message || 'Failed to execute payload' };
         }
     }
 }

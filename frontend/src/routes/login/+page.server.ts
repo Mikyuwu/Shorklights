@@ -20,7 +20,6 @@ export const actions = {
 
         if (response.ok) {
             const responseData = await response.json();
-            console.log('Login successful:', responseData);
             cookies.set('token', responseData.data.access_token, {
                 path: '/',
                 httpOnly: false,

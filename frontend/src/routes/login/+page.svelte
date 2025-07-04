@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-    <title>FAQ</title>
+    <title>Login - Shorklights</title>
 </svelte:head>
 <section class="tall:fixed tall:inset-0 h-screen flex flex-col items-center justify-center">
     <img class="h-32 w-32 z-[1]" src="/logo.png" alt="Logo" />
